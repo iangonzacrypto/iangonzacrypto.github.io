@@ -1,1 +1,43 @@
-test 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WalletConnect with Stellar Testnet</title>
+</head>
+<body>
+  <button id="connectButton">Connect to WalletConnect</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/stellar-sdk/dist/stellar-sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/client@1.4.0/dist/web3wallet.min.js"></script>
+  <script>
+    const StellarSdk = StellarSdk.default;
+    const Web3Wallet = Web3Wallet.default;
+
+    const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+    const walletConnect = new Web3Wallet({
+      bridge: 'https://bridge.walletconnect.org',
+      qrcodeModalOptions: {
+        mobileLinks: ['rainbow', 'metamask', 'trust'],
+      },
+    });
+
+    const connectButton = document.getElementById('connectButton');
+
+    connectButton.addEventListener('click', async () => {
+      try {
+        await walletConnect.connect();
+        console.log('Connected');
+
+        // Retrieve the connected public key
+        const publicKey = walletConnect.accounts[0];
+        console.log('Connected account:', publicKey);
+
+        // Load account information
+        const account = await server.loadAccount(publicKey);
+        console.log('Account Information:', account);
+      } catch (error) {
+        console.error('Error connecting:', error);
+      }
+    });
+  </script>
+</body>
+</html>
